@@ -22,3 +22,7 @@ The existing public prototype is unchanged. This is not yet a revenue-ready laun
 Extract the archive, open `launch/README.md`, and follow its container setup. Keep secrets out of git. A private repository and copyright notice protect access and copying of covered expression; they cannot prohibit independently developing similar functionality.
 
 Archive SHA-256: `06dbe1005a8dfab583dfcf80ed23ef711975393e46a957b6de247fa8d8885259`
+
+## Deploy to Oracle Cloud
+
+See [deploy/ORACLE.md](deploy/ORACLE.md): clone on the server, then `sudo bash deploy/oracle-setup.sh`.
