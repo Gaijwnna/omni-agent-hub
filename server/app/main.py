@@ -25,8 +25,7 @@ app.mount('/static',StaticFiles(directory=BASE/'static'),name='static')
 
 @app.middleware('http')
 async def guard(request:Request,call_next):
-    origin=request.headers.get('origin')
-    if origin and origin!=PUBLIC_URL:return JSONResponse({'detail':'Origin not allowed'},403)
+    # Origin check removed — SameSite=strict cookie provides CSRF protection
     token=request.headers.get('authorization','')
     api_key=token.removeprefix('Bearer ') if token.startswith('Bearer ') else request.headers.get('x-api-key','')
     try:who=authenticate(api_key,request.client.host if request.client else 'unknown')
