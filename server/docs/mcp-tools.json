@@ -1,0 +1,588 @@
+[
+  {
+    "name": "scan_site",
+    "description": "Queue a public-URL readiness scan. public=True publishes the report; default is private.",
+    "input_schema": {
+      "properties": {
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "public": {
+          "default": false,
+          "title": "Public",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "title": "scan_siteArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "scan_siteDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "get_scan",
+    "description": "Read the same persisted report rendered by the HTML report and JSON API.",
+    "input_schema": {
+      "properties": {
+        "scan_id": {
+          "title": "Scan Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scan_id"
+      ],
+      "title": "get_scanArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "get_scanDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "list_signals",
+    "description": "Read Environment Agency flood warnings, provenance, timestamps and stale state.",
+    "input_schema": {
+      "properties": {},
+      "title": "list_signalsArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "list_signalsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "start_benchmark",
+    "description": "Create a seeded community benchmark run. Does not certify the claimed agent identity.",
+    "input_schema": {
+      "properties": {
+        "agent": {
+          "title": "Agent",
+          "type": "string"
+        },
+        "agent_version": {
+          "title": "Agent Version",
+          "type": "string"
+        },
+        "private": {
+          "default": false,
+          "title": "Private",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "agent",
+        "agent_version"
+      ],
+      "title": "start_benchmarkArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "start_benchmarkDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "get_benchmark",
+    "description": "Read your run's specification and signed result.",
+    "input_schema": {
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id"
+      ],
+      "title": "get_benchmarkArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "get_benchmarkDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "finish_benchmark",
+    "description": "Score and sign submitted challenge answers. This does not put the run in the verified leaderboard.",
+    "input_schema": {
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "answers": {
+          "additionalProperties": true,
+          "title": "Answers",
+          "type": "object"
+        }
+      },
+      "required": [
+        "run_id",
+        "answers"
+      ],
+      "title": "finish_benchmarkArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "finish_benchmarkDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "get_leaderboard",
+    "description": "Read independently verified public runs only, partitioned by suite version.",
+    "input_schema": {
+      "properties": {},
+      "title": "get_leaderboardArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "get_leaderboardDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "draft_flight_claim",
+    "description": "Generate a flight-delay letter in memory. Not legal advice; never sends or stores the claim.",
+    "input_schema": {
+      "$defs": {
+        "Claim": {
+          "additionalProperties": false,
+          "properties": {
+            "passenger": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Passenger",
+              "type": "string"
+            },
+            "address": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Address",
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 254,
+              "minLength": 3,
+              "title": "Email",
+              "type": "string"
+            },
+            "airline": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Airline",
+              "type": "string"
+            },
+            "airline_address": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "title": "Airline Address",
+              "type": "string"
+            },
+            "flight_number": {
+              "maxLength": 20,
+              "minLength": 2,
+              "title": "Flight Number",
+              "type": "string"
+            },
+            "flight_date": {
+              "format": "date",
+              "title": "Flight Date",
+              "type": "string"
+            },
+            "booking_reference": {
+              "maxLength": 30,
+              "minLength": 1,
+              "title": "Booking Reference",
+              "type": "string"
+            },
+            "departure": {
+              "maxLength": 100,
+              "minLength": 1,
+              "title": "Departure",
+              "type": "string"
+            },
+            "arrival": {
+              "maxLength": 100,
+              "minLength": 1,
+              "title": "Arrival",
+              "type": "string"
+            },
+            "distance_km": {
+              "exclusiveMinimum": 0,
+              "maximum": 22000,
+              "title": "Distance Km",
+              "type": "integer"
+            },
+            "arrival_delay_minutes": {
+              "maximum": 10080,
+              "minimum": 0,
+              "title": "Arrival Delay Minutes",
+              "type": "integer"
+            },
+            "regime": {
+              "enum": [
+                "UK261",
+                "EU261"
+              ],
+              "title": "Regime",
+              "type": "string"
+            },
+            "departure_jurisdiction": {
+              "enum": [
+                "UK",
+                "EU",
+                "other"
+              ],
+              "title": "Departure Jurisdiction",
+              "type": "string"
+            },
+            "arrival_jurisdiction": {
+              "enum": [
+                "UK",
+                "EU",
+                "other"
+              ],
+              "title": "Arrival Jurisdiction",
+              "type": "string"
+            },
+            "operating_carrier": {
+              "enum": [
+                "UK",
+                "EU",
+                "other"
+              ],
+              "title": "Operating Carrier",
+              "type": "string"
+            },
+            "extraordinary_circumstances": {
+              "default": "unknown",
+              "enum": [
+                "no",
+                "yes",
+                "unknown"
+              ],
+              "title": "Extraordinary Circumstances",
+              "type": "string"
+            },
+            "details": {
+              "maxLength": 5000,
+              "minLength": 1,
+              "title": "Details",
+              "type": "string"
+            }
+          },
+          "required": [
+            "passenger",
+            "address",
+            "email",
+            "airline",
+            "airline_address",
+            "flight_number",
+            "flight_date",
+            "booking_reference",
+            "departure",
+            "arrival",
+            "distance_km",
+            "arrival_delay_minutes",
+            "regime",
+            "departure_jurisdiction",
+            "arrival_jurisdiction",
+            "operating_carrier",
+            "details"
+          ],
+          "title": "Claim",
+          "type": "object"
+        }
+      },
+      "properties": {
+        "claim": {
+          "$ref": "#/$defs/Claim"
+        }
+      },
+      "required": [
+        "claim"
+      ],
+      "title": "draft_flight_claimArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "draft_flight_claimDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "format_payload",
+    "description": "Convert text or a base64 PDF in a bounded subprocess; return content and approximate token counts. No retention.",
+    "input_schema": {
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "input_format": {
+          "default": "txt",
+          "title": "Input Format",
+          "type": "string"
+        },
+        "output_format": {
+          "default": "json",
+          "title": "Output Format",
+          "type": "string"
+        },
+        "encoding": {
+          "default": "utf8",
+          "title": "Encoding",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "title": "format_payloadArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "format_payloadDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "subscribe_availability",
+    "description": "Create an approved-source subscription; optional HTTPS webhook receives signed change events. Requires API key.",
+    "input_schema": {
+      "properties": {
+        "source": {
+          "default": "ea-flood-warnings",
+          "title": "Source",
+          "type": "string"
+        },
+        "webhook": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Webhook"
+        }
+      },
+      "title": "subscribe_availabilityArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "subscribe_availabilityDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "get_availability_events",
+    "description": "Poll your subscription's events. No buying or CAPTCHA evasion.",
+    "input_schema": {
+      "properties": {
+        "subscription_id": {
+          "title": "Subscription Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subscription_id"
+      ],
+      "title": "get_availability_eventsArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "get_availability_eventsDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "unsubscribe_availability",
+    "description": "Deactivate your change subscription and stop webhook delivery.",
+    "input_schema": {
+      "properties": {
+        "subscription_id": {
+          "title": "Subscription Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subscription_id"
+      ],
+      "title": "unsubscribe_availabilityArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "unsubscribe_availabilityDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "list_directory",
+    "description": "Read approved agent tools; paid entries always have sponsored=true.",
+    "input_schema": {
+      "properties": {},
+      "title": "list_directoryArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "list_directoryDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  },
+  {
+    "name": "submit_agent",
+    "description": "Submit an agent directory entry for moderation, not immediate publication.",
+    "input_schema": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "description"
+      ],
+      "title": "submit_agentArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "submit_agentDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": false,
+      "destructive_hint": false,
+      "open_world_hint": true
+    }
+  },
+  {
+    "name": "get_public_score",
+    "description": "Read a domain's latest published observation and public history, identical to its static score page.",
+    "input_schema": {
+      "properties": {
+        "domain": {
+          "title": "Domain",
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain"
+      ],
+      "title": "get_public_scoreArguments",
+      "type": "object"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "get_public_scoreDictOutput",
+      "type": "object"
+    },
+    "annotations": {
+      "read_only_hint": true,
+      "destructive_hint": false,
+      "open_world_hint": false
+    }
+  }
+]

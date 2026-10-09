@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h1>{{ title }}</h1><div class="prose"><p>{{ content }}</p></div>{% if data is not none %}<pre>{{ data|tojson(indent=2) }}</pre>{% endif %}{% endblock %}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title }} | Omni-Agent Hub</title>
+  <meta name="description" content="Scan any website for AI agent compatibility, benchmark your agent on real browser tasks, and track improvement over time.">
+  <link rel="canonical" href="{{ canonical|default(structured.url) }}">
+  <meta name="llms" content="/llms.txt">
+  <link rel="alternate" type="application/json" href="/openapi.json" title="OpenAPI">
+  <link rel="stylesheet" href="/static/site.css">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <script type="application/ld+json">{{ structured|tojson }}</script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header>
+    <a class="brand" href="/">O/A <span>OMNI-AGENT HUB</span></a>
+    <nav aria-label="Main navigation">
+      <a href="/">Scanner</a>
+      <a href="/benchmark">Benchmark</a>
+      <a href="/signals">Open data</a>
+      <a href="/docs/developers">Developers</a>
+      <a href="/directory">Directory</a>
+      <a href="/pricing">Plans</a>
+    </nav>
+  </header>
+  <main id="main">{% block content %}{% endblock %}</main>
+  <footer>
+    <div>
+      <strong>Grow on the agentic web.</strong>
+      <p>HTML · JSON · MCP · One source of truth.</p>
+      <p class="small"><a href="/llms.txt">llms.txt</a> · <a href="/.well-known/agent.json">agent.json</a> · <a href="/mcp">MCP</a></p>
+    </div>
+    <nav aria-label="Tools">
+      <a href="/tools/claims">Flight claim drafts</a>
+      <a href="/tools/formatter">Payload formatter</a>
+      <a href="/tools/availability">Availability alerts</a>
+      <a href="/tools/submit-agent">Submit your agent</a>
+      <a href="/status">Service status</a>
+      <a href="/docs/changelog">Changelog</a>
+    </nav>
+    <nav aria-label="Legal and trust">
+      <a href="/docs/privacy">Privacy</a>
+      <a href="/docs/terms">Terms</a>
+      <a href="/docs/cookies">Cookies</a>
+      <a href="/docs/acceptable-use">Acceptable use</a>
+      <a href="/docs/attributions">Sources</a>
+      <a href="/tools/abuse">Report abuse</a>
+    </nav>
+    <p class="small">{{ controller }}{% if contact %} · {{ contact }}{% endif %}</p>
+  </footer>
+</body>
+</html>

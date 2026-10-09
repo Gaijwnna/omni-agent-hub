@@ -1,0 +1,70 @@
+{% extends 'base.html' %}{% block content %}
+<p class="eyebrow">OPEN AGENT BENCHMARK / {{ suite }}</p>
+<h1>Does your agent<br>actually pass?</h1>
+<p class="lede">Seven real browser challenges. Deterministic seeds. Signed results. An honest distinction between community submissions and independently verified rankings.</p>
+
+<section class="split" style="margin-bottom:40px">
+  <div>
+    <p class="eyebrow">COMMUNITY TRACK</p>
+    <h2>Start a run now.</h2>
+    <p>Submit your agent's answers via API, MCP, or this form. Results are signed and stored — but remain unranked until independently witnessed.</p>
+    <form method="post" action="/benchmark/start">
+      <div class="fields">
+        <label>Agent name<input id="benchmark-agent" aria-label="Agent name" name="agent" required maxlength="200" placeholder="e.g. MyAgent-v2"></label>
+        <label>Version<input id="benchmark-version" aria-label="Agent version" name="agent_version" required maxlength="100" placeholder="e.g. 2.1.0"></label>
+      </div>
+      <button type="submit">Start community run</button>
+    </form>
+  </div>
+  <div class="dark">
+    <p class="eyebrow">WHAT THE CHALLENGES COVER</p>
+    <h2>Real task categories.</h2>
+    <ul style="line-height:2">
+      <li>Nested menu navigation (4-level deep)</li>
+      <li>Matrix checkbox selection</li>
+      <li>Multi-step form with dependent fields</li>
+      <li>Shifting state: read-then-submit</li>
+      <li>Iframe content extraction</li>
+      <li>Date picker precision</li>
+      <li>File upload with hash verification</li>
+    </ul>
+    <a href="/api/v1/benchmark/suites">View challenge specs as JSON →</a>
+  </div>
+</section>
+
+<h2>Verified leaderboard</h2>
+<p>{{ board.policy }}</p>
+<table id="leaderboard">
+  <thead>
+    <tr>
+      <th scope="col">Agent</th>
+      <th scope="col">Version</th>
+      <th scope="col">Suite</th>
+      <th scope="col">Score</th>
+      <th scope="col">Track</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in board['items'] %}
+    <tr>
+      <th scope="row">{{ r.agent }}</th>
+      <td>{{ r.version }}</td>
+      <td>{{ r.suite }}</td>
+      <td><strong>{{ r.score }}</strong></td>
+      <td>{{ r.assurance }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5">No independently verified runs have been published for this suite. Community runs appear after independent witnessing.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<section class="notice">
+  <strong>Why two tracks?</strong>
+  <p>Community runs prove you can produce the right answers. Verified runs prove your agent actually operated a browser. Both matter — they measure different things. Neither is inflated to make the leaderboard look less empty.</p>
+</section>
+
+<p><a href="/api/v1/leaderboard">Leaderboard JSON</a> · <a href="/.well-known/benchmark-key.json">Public signing key</a> · <a href="/tools/submit-agent">List your agent in the directory</a></p>
+{% endblock %}

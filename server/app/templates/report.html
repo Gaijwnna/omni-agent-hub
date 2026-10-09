@@ -1,0 +1,138 @@
+{% extends 'base.html' %}{% block content %}
+<p class="eyebrow">READINESS SCANNER / {{ scan.id }}</p>
+<h1>Agent readiness report</h1>
+<p><strong>{{ scan.url }}</strong></p>
+<p id="scan-status">Status: <strong>{{ scan.status }}</strong> · {{ 'Public' if scan.public else 'Private' }}</p>
+
+{% if scan.error %}
+<p class="notice error">{{ scan.error }}</p>
+{% endif %}
+
+{% if scan.report %}
+{% set r = scan.report %}
+
+<div class="score-panel">
+  <div class="score">
+    <strong>{{ r.score if r.score is not none else '—' }}</strong>
+    <div class="score-meta">
+      {% if r.score is not none %}
+        <span class="score-label">/ 100</span>
+        <span class="score-grade {% if r.score >= 80 %}grade-a{% elif r.score >= 60 %}grade-b{% elif r.score >= 40 %}grade-c{% else %}grade-d{% endif %}">
+          {% if r.score >= 80 %}AI-Ready{% elif r.score >= 60 %}Improving{% elif r.score >= 40 %}Needs Work{% else %}Not Ready{% endif %}
+        </span>
+      {% else %}
+        <span class="score-label">Incomplete · {{ r.coverage }}% coverage</span>
+        <span>Possible range: {{ r.score_range[0] }}–{{ r.score_range[1] }}</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="score-bar-wrap">
+    <div class="score-bar" style="width:{{ r.partial_score }}%"></div>
+  </div>
+  <p class="small">Methodology {{ r.methodology_version }} · Scanned {{ r.scanned_at }} · Automated assessment, not certification.</p>
+</div>
+
+{% if r.get('priority_fixes') %}
+<section class="priority-fixes">
+  <h2>Priority fixes</h2>
+  <p class="lede-sm">Ordered by points available. Fix the top item first for the biggest score jump.</p>
+  {% for fix in r.priority_fixes %}
+  <details {% if loop.first %}open{% endif %}>
+    <summary>
+      <span class="fix-check">{{ fix.id | replace('_', ' ') | title }}</span>
+      <span class="fix-pts">+{{ fix.points_available }} pts available</span>
+    </summary>
+    <div class="fix-body">
+      <pre>{{ fix.fix }}</pre>
+    </div>
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if r.get('discovery') %}
+<section>
+  <h2>AI discovery signals</h2>
+  <div class="discovery-grid">
+    {% set d = r.discovery %}
+    <div class="disc-item {{ 'pass' if d.llms_txt else 'fail' }}">
+      <strong>llms.txt</strong>
+      <span>{{ '✓ Found' if d.llms_txt else '✗ Missing' }}</span>
+      {% if not d.llms_txt %}<a href="/docs/methodology">How to add</a>{% endif %}
+    </div>
+    <div class="disc-item {{ 'pass' if d.openapi else 'fail' }}">
+      <strong>OpenAPI</strong>
+      <span>{{ '✓ Found' if d.openapi else '✗ Missing' }}</span>
+    </div>
+    <div class="disc-item {{ 'pass' if d.agent_json else 'fail' }}">
+      <strong>agent.json</strong>
+      <span>{{ '✓ Found' if d.agent_json else '✗ Missing' }}</span>
+    </div>
+    <div class="disc-item {{ 'pass' if d.mcp_endpoint else 'fail' }}">
+      <strong>MCP endpoint</strong>
+      <span>{{ '✓ Found' if d.mcp_endpoint else '✗ Missing' }}</span>
+    </div>
+    <div class="disc-item {{ 'pass' if d.ai_plugin_json else 'fail' }}">
+      <strong>ai-plugin.json</strong>
+      <span>{{ '✓ Found' if d.ai_plugin_json else '✗ Missing' }}</span>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section>
+  <h2>Scoring evidence</h2>
+  <div class="table-wrap">
+    <table id="readiness-checks">
+      <caption>All checks · {{ r.coverage }}% measurement coverage</caption>
+      <thead>
+        <tr>
+          <th scope="col">Check</th>
+          <th scope="col">Score</th>
+          <th scope="col">Status</th>
+          <th scope="col">Evidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in r.checks %}
+        <tr id="check-{{ c.id }}" class="check-row-{{ c.status }}">
+          <th scope="row">{{ c.id | replace('_', ' ') | title }}</th>
+          <td><strong>{{ c.earned if c.earned is not none else '?' }}</strong> / {{ c.weight }}</td>
+          <td>
+            <span class="status-badge status-{{ c.status }}">
+              {% if c.status == 'pass' %}Pass{% elif c.status == 'needs_work' %}Needs work{% else %}Unknown{% endif %}
+            </span>
+          </td>
+          <td><pre>{{ c.evidence | tojson(indent=2) }}</pre></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% if scan.public and r.score is not none %}
+<section>
+  <h2>Share your score</h2>
+  <img src="/badges/{{ scan.id }}.svg" width="190" height="32" alt="Agent-Ready: {{ r.score }}">
+  <pre>&lt;a href="{{ canonical | default(base_url + '/score/' + scan.url.split('/')[2]) }}"&gt;
+  &lt;img src="{{ base_url }}/badges/{{ scan.id }}.svg" alt="Agent-Ready: {{ r.score }}"&gt;
+&lt;/a&gt;</pre>
+</section>
+{% endif %}
+
+<section>
+  <h2>Limits of this report</h2>
+  <ul>{% for line in r.limitations %}<li>{{ line }}</li>{% endfor %}</ul>
+  {% if r.browser_error %}<p class="small">{{ r.browser_error }}</p>{% endif %}
+</section>
+
+{% else %}
+<div class="queued-notice">
+  <p>Your scan is queued. Reload to check progress — this page does not auto-refresh.</p>
+  <a class="button" href="/scans/{{ scan.id }}">Check status</a>
+</div>
+{% endif %}
+
+<p class="small"><a href="/api/v1/scans/{{ scan.id }}">View as JSON</a> · <a href="/">Scan another site</a></p>
+{% endblock %}

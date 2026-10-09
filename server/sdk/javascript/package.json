@@ -1,0 +1,1 @@
+{"name":"@omni-agent-hub/sdk","version":"0.1.0","type":"module","main":"index.js","exports":"./index.js","files":["index.js","LICENSE"],"engines":{"node":">=20"},"license":"SEE LICENSE IN LICENSE","description":"Thin client for Omni-Agent Hub. Namespace ownership must be verified before publication."}

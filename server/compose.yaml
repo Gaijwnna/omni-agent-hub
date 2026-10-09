@@ -1,0 +1,100 @@
+services:
+  app:
+    build:
+      context: .
+      target: base
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://omni:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db/omni
+      REDIS_URL: redis://redis:6379/0
+      RENDERER_URL: http://renderer:8001
+    ports: ['0.0.0.0:80:8000']
+    networks: [data, egress]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 1g
+    pids_limit: 128
+    restart: unless-stopped
+  worker:
+    build:
+      context: .
+      target: base
+    command: ['python', '-m', 'app.worker']
+    networks: [data, render-control, egress]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://omni:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db/omni
+      REDIS_URL: redis://redis:6379/0
+      RENDERER_URL: http://renderer:8001
+    depends_on:
+      db: {condition: service_healthy}
+      renderer: {condition: service_started}
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=128m']
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 768m
+    restart: unless-stopped
+  renderer:
+    build:
+      context: .
+      target: renderer
+    environment:
+      HOME: /tmp
+      FETCH_PROXY_URL: http://fetch-proxy:8002
+    networks: [render-control, render-fetch]
+    read_only: true
+    tmpfs: ['/tmp:rw,nosuid,size=512m']
+    shm_size: 256mb
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 2g
+    pids_limit: 256
+    restart: unless-stopped
+  fetch-proxy:
+    build:
+      context: .
+      target: base
+    command: ['uvicorn', 'app.fetch_proxy:app', '--host', '0.0.0.0', '--port', '8002', '--no-access-log']
+    networks: [render-fetch, egress]
+    read_only: true
+    tmpfs: ['/tmp:rw,noexec,nosuid,size=64m']
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 256m
+    restart: unless-stopped
+  db:
+    networks: [data]
+    image: postgres:17
+    environment:
+      POSTGRES_USER: omni
+      POSTGRES_DB: omni
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes: ['postgres:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U omni -d omni']
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+  redis:
+    networks: [data]
+    image: redis:7-alpine
+    command: ['redis-server', '--maxmemory', '128mb', '--maxmemory-policy', 'noeviction']
+    restart: unless-stopped
+
+volumes:
+  postgres:
+
+networks:
+  data:
+    internal: true
+  render-control:
+    internal: true
+  render-fetch:
+    internal: true
+  egress: {}
