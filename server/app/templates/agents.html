@@ -1,0 +1,57 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-header">
+  <p class="eyebrow">OMNIMIND / AGENT SWARM</p>
+  <h1>Your AI company.</h1>
+  <p class="lede">Build a team of agents with distinct personalities, departments, and 10-point behavioral sliders. They collaborate on tasks, self-improve over time, and work together like a real organisation.</p>
+  <div class="hero-ctas">
+    <a class="button-primary" href="/agents/new">Create an agent</a>
+    <a class="button-secondary" href="/agents/new?random=1">Generate random agent</a>
+    {% if swarms %}<a class="button-secondary" href="/swarms">View swarms</a>{% else %}<a class="button-secondary" href="/swarms/new">Create a swarm</a>{% endif %}
+  </div>
+</div>
+
+{% if agents_by_dept %}
+{% for dept, agents in agents_by_dept.items() %}
+<section class="dept-section">
+  <div class="dept-header">
+    <h2>{{ dept }}</h2>
+    <span class="dept-count">{{ agents|length }} agent{{ 's' if agents|length != 1 }}</span>
+  </div>
+  <div class="agent-grid">
+    {% for agent in agents %}
+    <a class="agent-card" href="/agents/{{ agent.id }}">
+      <div class="agent-avatar" style="background: {{ dept_colors[agent.department] }}">{{ agent.name[0] }}</div>
+      <div class="agent-info">
+        <strong>{{ agent.name }}</strong>
+        <span class="agent-role">{{ agent.role_title }}</span>
+        <div class="trait-mini">
+          {% for key in ['creativity','assertiveness','empathy','focus','collaboration'] %}
+          <div class="trait-bar-mini" title="{{ traits[key][0] }}: {{ agent.personality.get(key, 5) }}/10">
+            <div class="trait-fill-mini" style="width: {{ agent.personality.get(key, 5) * 10 }}%"></div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="agent-stats">
+          <span>{{ agent.stats.get('messages', 0) }} msgs</span>
+          <span>{{ agent.stats.get('self_mods', 0) }} self-upgrades</span>
+          {% if agent.is_random %}<span class="badge-random">random</span>{% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+    <a class="agent-card agent-add" href="/agents/new?dept={{ dept }}">
+      <div class="add-icon">+</div>
+      <span>Add to {{ dept }}</span>
+    </a>
+  </div>
+</section>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+  <h2>No agents yet.</h2>
+  <p>Create your first agent or generate a random one to get started.</p>
+  <a class="button-primary" href="/agents/new">Create an agent</a>
+  <a class="button-secondary" href="/agents/new?random=1">Generate random</a>
+</div>
+{% endif %}
+{% endblock %}

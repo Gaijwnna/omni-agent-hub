@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.pem
+*.key
+__pycache__/
+.pytest_cache/
+.venv/
+node_modules/
+*.tar.gz
+*.tgz
+*.egg-info/
+build/

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-header">
+  <h1>New Swarm</h1>
+  <p>Create a group to run collaborative tasks across multiple agents.</p>
+</div>
+<form method="post" style="max-width:600px;">
+  <label style="display:block;margin-bottom:6px;font-weight:700;">Swarm name</label>
+  <input type="text" name="name" required placeholder="e.g. Product Launch Team" style="width:100%;margin-bottom:20px;">
+  <label style="display:block;margin-bottom:6px;font-weight:700;">Description (optional)</label>
+  <textarea name="description" rows="3" placeholder="What does this swarm work on?" style="width:100%;margin-bottom:24px;"></textarea>
+  <div style="display:flex;gap:12px;">
+    <button type="submit" class="button-primary">Create Swarm</button>
+    <a href="/swarms" class="button-secondary">Cancel</a>
+  </div>
+</form>
+{% endblock %}

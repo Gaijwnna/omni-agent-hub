@@ -1,0 +1,57 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-header">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <a href="/swarms" style="font-size:.85rem;color:#526575;">&larr; Swarms</a>
+      <h1 style="margin-top:8px;">Swarm</h1>
+    </div>
+    <a href="/agents/new?dept=Engineering" class="button-secondary">+ Add Agent</a>
+  </div>
+</div>
+
+{% if agents %}
+<div class="dept-section">
+  <div class="agent-grid">
+    {% for a in agents %}
+    <a href="/agents/{{ a.id }}" class="agent-card" style="border-top:3px solid {{ dept_colors.get(a.department,'#c8fc55') }};">
+      <div class="agent-avatar" style="background:{{ dept_colors.get(a.department,'#c8fc55') }}20;">
+        {{ a.name[0] }}
+      </div>
+      <div class="agent-info">
+        <strong>{{ a.name }}</strong>
+        <span class="agent-role">{{ a.role_title }} · {{ a.department }}</span>
+        <div class="trait-mini">
+          {% for t in ['creativity','assertiveness','empathy','focus','collaboration'] %}
+          <div class="trait-bar-mini"><div class="trait-fill-mini" style="width:{{ a.personality.get(t,5)*10 }}%"></div></div>
+          {% endfor %}
+        </div>
+        <div class="agent-stats">
+          <span>{{ a.stats.get('messages',0) }} msgs</span>
+          <span>{{ a.stats.get('self_mods',0) }} upgrades</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div style="margin-top:48px;background:white;border:1px solid var(--line);padding:32px;">
+  <h2 style="margin-top:0;">Run a Task</h2>
+  <p style="color:#526575;">All {{ agents|length }} agents will respond in sequence, each building on the previous.</p>
+  <form method="post" action="/swarms/{{ swarm_id }}/task">
+    <label style="display:block;margin-bottom:6px;font-weight:700;">Task title</label>
+    <input type="text" name="title" required placeholder="e.g. Q4 product strategy" style="width:100%;margin-bottom:16px;">
+    <label style="display:block;margin-bottom:6px;font-weight:700;">Description</label>
+    <textarea name="description" rows="4" style="width:100%;margin-bottom:20px;" placeholder="Describe the task or question for the team..."></textarea>
+    <button type="submit" class="button-primary">Run Task &rarr;</button>
+  </form>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <h2>No agents in this swarm</h2>
+  <p>Create agents and assign them to this swarm.</p>
+  <a href="/agents/new" class="button-primary">Add an agent</a>
+</div>
+{% endif %}
+{% endblock %}

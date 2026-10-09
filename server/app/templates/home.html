@@ -1,99 +1,136 @@
 {% extends 'base.html' %}{% block content %}
+
 <div class="hero">
-  <p class="eyebrow">THE GROWTH ENGINE FOR THE AGENTIC WEB</p>
-  <h1>Make AI agents love<br>your website.</h1>
-  <p class="lede">Every AI agent that can't use your site is a customer you're missing. Scan for free, fix what matters, and watch AI adoption compound.</p>
-  <form class="scan-form" method="post" action="/scan">
-    <label for="scan-url">Website URL</label>
-    <div class="input-row">
-      <input id="scan-url" name="url" type="url" placeholder="https://your-website.com" aria-label="Public website URL" required>
-      <button type="submit">Scan free</button>
-    </div>
-    <label class="checkbox">
-      <input name="public" id="publish-report" type="checkbox" checked>
-      Publish this report so AI agents can find it
-    </label>
-    <p class="small">No signup. No cost. Five scans per hour. Public URLs only; no login or query tokens.</p>
-  </form>
+  <p class="eyebrow">THE INTELLIGENCE LAYER FOR THE AGENTIC WEB</p>
+  <h1>AI agents pay to<br>browse smarter.</h1>
+  <p class="lede">Before an AI visits any website, it checks here first. We score every site on the open web — semantics, API access, stability, CAPTCHA barriers — and sell that intelligence to the agents that need it.</p>
+  <div class="hero-ctas">
+    <a class="button-primary" href="/docs/developers">Get API access →</a>
+    <a class="button-secondary" href="/benchmark">Benchmark your agent</a>
+  </div>
 </div>
 
-<section class="growth-loop">
-  <p class="eyebrow">THE COMPOUNDING LOOP</p>
-  <h2>Fix once. Reach every agent.</h2>
-  <div class="loop-steps">
-    <div class="step">
-      <span class="step-num">01</span>
-      <h3>Scan</h3>
-      <p>Get an evidence-based score across eight checks: semantics, labels, layout stability, CAPTCHA barriers, llms.txt, crawler policy, raw HTML and API discovery.</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="step">
-      <span class="step-num">02</span>
-      <h3>Fix</h3>
-      <p>Each failing check ships with the exact code to add. Not vague advice — precise HTML, JSON, and configuration snippets ranked by impact.</p>
-    </div>
-    <div class="step-arrow">→</div>
-    <div class="step">
-      <span class="step-num">03</span>
-      <h3>Grow</h3>
-      <p>Rescan and track your score over time. A higher score means more AI agents can read, understand, and take actions on your site autonomously.</p>
-    </div>
+<section class="stat-bar">
+  <div class="stat">
+    <strong>8</strong>
+    <span>scored signals per site</span>
+  </div>
+  <div class="stat">
+    <strong>3</strong>
+    <span>interfaces: HTML · REST · MCP</span>
+  </div>
+  <div class="stat">
+    <strong>100</strong>
+    <span>point readiness score</span>
+  </div>
+  <div class="stat">
+    <strong>x402</strong>
+    <span>per-query crypto payments</span>
   </div>
 </section>
 
 <section class="split">
   <div>
-    <p class="eyebrow">FOR WEBSITE OWNERS</p>
-    <h2>Turn your site into<br>an AI-first platform.</h2>
-    <p>ChatGPT, Claude, Perplexity and every browser agent look for the same signals: clean HTML, labelled controls, an OpenAPI document, and clear crawler policy. One report shows you exactly what to fix.</p>
-    <a href="/docs/methodology">How scores are calculated</a>
+    <p class="eyebrow">FOR AI COMPANIES & AGENT OPERATORS</p>
+    <h2>Know before you browse.</h2>
+    <p>Stop wasting tokens on sites that block bots, break in JavaScript, or have no API. Query our readiness index before dispatching your agent. Pay per query via x402 or subscribe for bulk access.</p>
+    <div class="use-cases">
+      <div class="uc"><strong>Pre-flight check</strong> — score a URL before your agent visits it</div>
+      <div class="uc"><strong>Site routing</strong> — pick the best URL from search results</div>
+      <div class="uc"><strong>Capability detection</strong> — find OpenAPI, MCP, and llms.txt</div>
+      <div class="uc"><strong>Competitor intelligence</strong> — track competitor AI-readiness over time</div>
+    </div>
+    <a href="/docs/developers">Read the API docs →</a>
   </div>
   <div class="dark">
-    <p class="eyebrow">FOR AGENT DEVELOPERS</p>
-    <h2>Measure capability,<br>not just vibes.</h2>
-    <p>Seven seeded browser challenges. Signed results. Reproducible across runs and agent versions. Track whether your agent is actually getting better at real tasks — not just benchmark scores you control.</p>
-    <a href="/benchmark">Open Agent Benchmark →</a>
+    <p class="eyebrow">HOW IT WORKS</p>
+    <h2>Three ways in.</h2>
+    <div class="how-items">
+      <div class="how-item">
+        <span class="how-num">01</span>
+        <div>
+          <strong>Query via API</strong>
+          <p>POST a URL, get a full readiness report with score, evidence, and fix list. Free tier: 60 reads/min.</p>
+        </div>
+      </div>
+      <div class="how-item">
+        <span class="how-num">02</span>
+        <div>
+          <strong>Connect via MCP</strong>
+          <p>Add our MCP endpoint to your agent config. Call scan_url, get_public_score, and run_benchmark as tools directly from Claude, GPT-4, or any MCP client.</p>
+        </div>
+      </div>
+      <div class="how-item">
+        <span class="how-num">03</span>
+        <div>
+          <strong>Pay per scan via x402</strong>
+          <p>No subscription needed. HTTP 402 premium scans settle in USDC. Bulk pricing at $0.01/scan.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <section>
-  <p class="eyebrow">THREE INTERFACES. ONE SOURCE OF TRUTH.</p>
-  <h2>Built to be used by agents.</h2>
-  <div class="cards">
-    <article>
-      <h3>Semantic HTML</h3>
-      <p>Every result, score, and report is present in the first HTTP response. Agents can read it without JavaScript.</p>
-    </article>
-    <article>
-      <h3>JSON API</h3>
-      <p>Typed, versioned records with a generated OpenAPI specification. Use it in CI, scripts, and agent pipelines.</p>
-      <a href="/openapi.json">Read OpenAPI</a>
-    </article>
-    <article>
-      <h3>Native MCP</h3>
-      <p>Connect your AI client directly. Scan a site, run a benchmark, or retrieve public scores — from inside your agent.</p>
-      <a href="/.well-known/agent.json">Read capabilities</a>
-    </article>
-  </div>
-</section>
-
-<section>
-  <p class="eyebrow">WHAT WE CHECK</p>
+  <p class="eyebrow">WHAT WE MEASURE</p>
   <h2>Eight signals. 100 points.</h2>
+  <p class="lede-sm">Every score is evidence-based, methodology-versioned, and never modified by payment.</p>
   <div class="checks-grid">
     <div class="check-item"><strong>Semantic HTML <span class="pts">20</span></strong><p>Main landmark, single h1, native controls, table headers.</p></div>
-    <div class="check-item"><strong>Input labels <span class="pts">15</span></strong><p>Every form control has a non-empty associated label.</p></div>
-    <div class="check-item"><strong>Layout stability <span class="pts">12</span></strong><p>CLS observed over 5 seconds at 1365×768.</p></div>
-    <div class="check-item"><strong>CAPTCHA barriers <span class="pts">10</span></strong><p>Known CAPTCHA markup and provider patterns.</p></div>
-    <div class="check-item"><strong>llms.txt <span class="pts">8</span></strong><p>Machine-readable documentation index at /llms.txt.</p></div>
-    <div class="check-item"><strong>Crawler policy <span class="pts">10</span></strong><p>Named agent permissions in robots.txt.</p></div>
-    <div class="check-item"><strong>Initial HTML <span class="pts">15</span></strong><p>Useful content in the raw HTTP response before JS.</p></div>
+    <div class="check-item"><strong>Input labels <span class="pts">15</span></strong><p>Every form control has an associated, non-empty label.</p></div>
+    <div class="check-item"><strong>Layout stability <span class="pts">12</span></strong><p>CLS measured at 1365×768 over 5 seconds.</p></div>
+    <div class="check-item"><strong>CAPTCHA barriers <span class="pts">10</span></strong><p>Known CAPTCHA providers block agents — detected and scored.</p></div>
+    <div class="check-item"><strong>llms.txt presence <span class="pts">8</span></strong><p>Machine-readable documentation index for AI clients.</p></div>
+    <div class="check-item"><strong>Crawler policy <span class="pts">10</span></strong><p>Named-agent permissions in robots.txt.</p></div>
+    <div class="check-item"><strong>Raw HTML content <span class="pts">15</span></strong><p>Useful content without JavaScript execution.</p></div>
     <div class="check-item"><strong>API discovery <span class="pts">10</span></strong><p>OpenAPI, agent.json, MCP endpoint, or ai-plugin.json.</p></div>
   </div>
 </section>
 
-<section class="notice">
-  <strong>Evidence earns trust. Payment never changes a score.</strong>
-  <p>Sponsored directory entries are labelled. Automated scores are distinct from paid certification. Rankings contain only verified runs — an empty leaderboard stays empty until something real earns a place on it.</p>
+<section>
+  <p class="eyebrow">ALSO ON THE HUB</p>
+  <h2>More than a scanner.</h2>
+  <div class="cards">
+    <article>
+      <h3>Agent Benchmark</h3>
+      <p>Seven seeded browser challenges. Signed results. Reproducible tests to verify your agent actually completes real tasks — not just benchmark scores you control.</p>
+      <a href="/benchmark">Run a benchmark →</a>
+    </article>
+    <article>
+      <h3>OmniMind Swarm</h3>
+      <p>Build a company of AI agents with distinct personalities, departments, and 10-point behavioral sliders. They collaborate, self-improve, and work like a real team.</p>
+      <a href="/agents">Launch your swarm →</a>
+    </article>
+    <article>
+      <h3>Live Signals</h3>
+      <p>Environment Agency flood warnings via MCP, REST, or HTML. Real data, proper attribution, 15-minute refresh. Example of what approved-source adapters look like at scale.</p>
+      <a href="/signals">See live data →</a>
+    </article>
+  </div>
 </section>
+
+<section class="notice">
+  <strong>Scores are evidence. Payment never buys a better score.</strong>
+  <p>Every check is versioned and disclosed. Sponsored directory entries are labelled. The benchmark leaderboard stays empty until something real earns a place on it.</p>
+</section>
+
+{% if not billing_ready %}
+<section class="scan-fallback">
+  <p class="eyebrow">FREE SCAN</p>
+  <h2>Try it on any public URL.</h2>
+  <form class="scan-form" method="post" action="/scan">
+    <label for="scan-url">Website URL</label>
+    <div class="input-row">
+      <input id="scan-url" name="url" type="text" placeholder="example.com or https://example.com" aria-label="Public website URL" required>
+      <button type="submit">Scan free</button>
+    </div>
+    <label class="checkbox">
+      <input name="public" id="publish-report" type="checkbox" checked>
+      Add to the public index (enables the shareable badge and API access)
+    </label>
+    <p class="small">No signup. 5 scans/hour. Any public URL — query params are stripped automatically.</p>
+  </form>
+</section>
+{% endif %}
+
 {% endblock %}

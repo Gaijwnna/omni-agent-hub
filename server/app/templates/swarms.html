@@ -1,0 +1,26 @@
+{% extends 'base.html' %}{% block content %}
+<div class=page-header>
+  <h1>Swarms</h1>
+  <p>Groups of agents that collaborate on tasks together.</p>
+  <div class=hero-ctas>
+    <a href=/swarms/new class=button-primary>+ New Swarm</a>
+    <a href=/agents class=button-secondary>All Agents</a>
+  </div>
+</div>
+{% if swarms %}
+<div class=swarm-grid>
+{% for sw in swarms %}
+  <a href=/swarms/{{ sw.id }} class=swarm-card>
+    <h3>{{ sw.name }}</h3>
+    {% if sw.description %}<p style='font-size:.85rem;color:#526575;'>{{ sw.description }}</p>{% endif %}
+  </a>
+{% endfor %}
+</div>
+{% else %}
+<div class=empty-state>
+  <h2>No swarms yet</h2>
+  <p>Create a swarm to group agents and run collaborative tasks.</p>
+  <a href=/swarms/new class=button-primary>Create your first swarm</a>
+</div>
+{% endif %}
+{% endblock %}

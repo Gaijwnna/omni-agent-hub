@@ -1,0 +1,77 @@
+{% extends 'base.html' %}{% block content %}
+<div class="agent-hero" style="border-left: 6px solid {{ dept_colors[agent.department] }}">
+  <div class="agent-hero-avatar" style="background: {{ dept_colors[agent.department] }}">{{ agent.name[0] }}</div>
+  <div>
+    <p class="eyebrow">{{ agent.department }} / {{ agent.role_title }}</p>
+    <h1>{{ agent.name }}</h1>
+    {% if agent.backstory %}<p class="lede">{{ agent.backstory }}</p>{% endif %}
+    <div class="agent-meta">
+      <span>{{ agent.stats.get('messages', 0) }} messages</span>
+      <span>{{ agent.stats.get('tasks_done', 0) }} tasks</span>
+      <span>{{ agent.stats.get('self_mods', 0) }} self-upgrades</span>
+      {% if agent.is_random %}<span class="badge-random">randomly generated</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="agent-layout">
+  <div class="agent-left">
+    <section class="personality-panel">
+      <h2>Personality</h2>
+      <form method="post" action="/agents/{{ agent.id }}/personality">
+        {% for key, (label, desc) in traits.items() %}
+        <div class="trait-row">
+          <div class="trait-meta">
+            <strong>{{ label }}</strong>
+            <span class="trait-desc">{{ desc }}</span>
+          </div>
+          <div class="trait-slider-wrap">
+            <span class="trait-lo">1</span>
+            <input type="range" name="trait_{{ key }}" min="1" max="10"
+                   value="{{ agent.personality.get(key, 5) }}" class="trait-slider"
+                   oninput="this.nextElementSibling.textContent=this.value">
+            <span class="trait-val">{{ agent.personality.get(key, 5) }}</span>
+            <span class="trait-hi">10</span>
+          </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="save-traits">Save personality changes</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="agent-right">
+    <section class="chat-panel">
+      <h2>Chat with {{ agent.name }}</h2>
+      <div class="chat-messages" id="chat-box">
+        {% for msg in messages %}
+        <div class="msg msg-{{ msg.role }}">
+          <span class="msg-who">{{ 'You' if msg.role == 'user' else agent.name }}</span>
+          <div class="msg-body">{{ msg.content }}</div>
+        </div>
+        {% endfor %}
+        {% if not messages %}
+        <div class="chat-empty">Start a conversation. {{ agent.name }} will respond as their personality dictates.</div>
+        {% endif %}
+      </div>
+      <form method="post" action="/agents/{{ agent.id }}/chat" class="chat-form">
+        <input type="hidden" name="thread_id" value="{{ thread_id }}">
+        <div class="chat-input-row">
+          <textarea name="message" rows="2" placeholder="Message {{ agent.name }}…" required></textarea>
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="danger-zone">
+      <form method="post" action="/agents/{{ agent.id }}/reset-thread" style="display:inline">
+        <button type="submit" class="btn-ghost">New conversation</button>
+      </form>
+      <form method="post" action="/agents/{{ agent.id }}/delete" style="display:inline"
+            onsubmit="return confirm('Delete {{ agent.name }}?')">
+        <button type="submit" class="btn-danger">Delete agent</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}{% block content %}
+<p class="eyebrow">OMNIMIND / NEW AGENT</p>
+<h1>{{ 'Random agent' if random else 'Create an agent' }}</h1>
+
+<form method="post" action="/agents/new" class="agent-form">
+  <div class="fields">
+    <label>Name
+      <input name="name" required maxlength="200" value="{{ suggested_name }}" placeholder="e.g. Atlas">
+    </label>
+    <label>Department
+      <select name="department" id="dept-select">
+        {% for d in departments %}
+        <option value="{{ d }}" {% if d == suggested_dept %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Role title
+      <input name="role_title" maxlength="200" value="{{ suggested_role }}" placeholder="e.g. Senior Engineer">
+    </label>
+    <label>Swarm (optional)
+      <select name="swarm_id">
+        <option value="">— No swarm —</option>
+        {% for sw in swarms %}
+        <option value="{{ sw.id }}">{{ sw.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+  <label>Backstory (optional)
+    <textarea name="backstory" rows="3" maxlength="1000" placeholder="What shaped this agent's approach? What drives them?">{{ suggested_backstory }}</textarea>
+  </label>
+
+  <input type="hidden" name="is_random" value="{{ '1' if random else '0' }}">
+
+  <section class="personality-editor">
+    <h2>Personality</h2>
+    <p class="lede-sm">Set each trait 1–10. These shape every response this agent gives. You can change them anytime — or let the agent self-modify them based on what it learns.</p>
+    {% for key, (label, desc) in traits.items() %}
+    <div class="trait-row">
+      <div class="trait-meta">
+        <strong>{{ label }}</strong>
+        <span class="trait-desc">{{ desc }}</span>
+      </div>
+      <div class="trait-slider-wrap">
+        <span class="trait-lo">1</span>
+        <input type="range" name="trait_{{ key }}" min="1" max="10" value="{{ personality[key] }}"
+               class="trait-slider" oninput="this.nextElementSibling.textContent=this.value">
+        <span class="trait-val">{{ personality[key] }}</span>
+        <span class="trait-hi">10</span>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+
+  <div class="form-actions">
+    <button type="submit">Create agent</button>
+    <a class="button-secondary" href="/agents">Cancel</a>
+    <a class="button-secondary" href="/agents/new?random=1">Generate random instead</a>
+  </div>
+</form>
+{% endblock %}

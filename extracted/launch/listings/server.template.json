@@ -1,0 +1,8 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Gaijwnna/omni-agent-hub",
+  "title": "Omni-Agent Hub",
+  "description": "Evidence-based website readiness scans, signed community challenges and attributed open data.",
+  "version": "0.1.0",
+  "remotes": [{"type": "streamable-http", "url": "https://DEPLOYMENT-DOMAIN.invalid/mcp"}]
+}

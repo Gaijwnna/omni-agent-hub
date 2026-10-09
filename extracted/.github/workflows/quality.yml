@@ -1,0 +1,25 @@
+name: Private source quality
+on:
+  push:
+    paths: ['launch/**', '.github/workflows/quality.yml']
+  pull_request:
+    paths: ['launch/**', '.github/workflows/quality.yml']
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: launch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.lock
+      - run: python -m pytest -q
+      - run: python -m compileall -q app
+      - run: node --check sdk/javascript/index.js
+      - name: Reject accidentally tracked secrets
+        run: python ops/check_tracked_files.py
