@@ -18,10 +18,11 @@
     <a class="brand" href="/">O/A <span>OMNI-AGENT HUB</span></a>
     <nav aria-label="Main navigation">
       <a href="/">Scanner</a>
+      <a href="/agents">Agents</a>
+      <a href="/swarms">Swarms</a>
       <a href="/benchmark">Benchmark</a>
       <a href="/signals">Open data</a>
       <a href="/docs/developers">Developers</a>
-      <a href="/directory">Directory</a>
       <a href="/pricing">Plans</a>
     </nav>
   </header>
@@ -50,5 +51,68 @@
     </nav>
     <p class="small">{{ controller }}{% if contact %} · {{ contact }}{% endif %}</p>
   </footer>
+
+  <!-- AI Key Banner -->
+  <div id="key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#151b22;border-top:2px solid #c8fc55;padding:14px 24px;display:flex;align-items:center;gap:16px;z-index:999;font-size:.85rem;">
+    <span style="color:#c8fc55;font-weight:700;">⚡ Connect AI</span>
+    <span style="color:#b1c0ca;">Paste your API key to activate agents (Anthropic, OpenAI, or Groq — stored only in your browser)</span>
+    <input id="key-input" type="password" placeholder="sk-ant-... or sk-... or gsk_..." style="flex:1;max-width:380px;background:#0d1117;color:white;border:1px solid #c8fc55;padding:8px 12px;font-size:.85rem;">
+    <button onclick="saveKey()" style="background:#c8fc55;color:#151b22;border:none;padding:9px 18px;font-weight:700;cursor:pointer;">Save</button>
+    <button onclick="document.getElementById(&quot;key-banner&quot;).style.display=&quot;none&quot;" style="background:transparent;color:#526575;border:1px solid #526575;padding:9px 14px;cursor:pointer;">Later</button>
+  </div>
+  <div id="key-status" style="display:none;position:fixed;bottom:16px;right:16px;background:#151b22;border:1px solid #4ade80;color:#4ade80;padding:8px 16px;font-size:.8rem;font-family:monospace;z-index:1000;"></div>
+
+  <script>
+  (function(){
+    var KEY = localStorage.getItem('omni_ai_key');
+    var PROVIDER = localStorage.getItem('omni_ai_provider') || 'anthropic';
+    
+    function saveKey(){
+      var v = document.getElementById('key-input').value.trim();
+      if(!v){ return; }
+      var p = v.startsWith('sk-ant') ? 'anthropic' : v.startsWith('gsk_') ? 'groq' : 'openai';
+      localStorage.setItem('omni_ai_key', v);
+      localStorage.setItem('omni_ai_provider', p);
+      document.getElementById('key-banner').style.display = 'none';
+      showStatus('✓ ' + p + ' key saved');
+    }
+    
+    function showStatus(msg){
+      var el = document.getElementById('key-status');
+      el.textContent = msg; el.style.display = 'block';
+      setTimeout(function(){ el.style.display = 'none'; }, 3000);
+    }
+    
+    window.saveKey = saveKey;
+    window.getAiKey = function(){ return localStorage.getItem('omni_ai_key') || ''; };
+    window.getAiProvider = function(){ return localStorage.getItem('omni_ai_provider') || 'anthropic'; };
+    window.clearAiKey = function(){ localStorage.removeItem('omni_ai_key'); localStorage.removeItem('omni_ai_provider'); showStatus('Key cleared'); };
+    
+    // Show banner on agents pages if no key set
+    if(!localStorage.getItem('omni_ai_key') && (location.pathname.startsWith('/agents') || location.pathname.startsWith('/swarms'))){
+      document.getElementById('key-banner').style.display = 'flex';
+    }
+    
+    // Intercept agent chat forms to inject key as hidden input
+    document.addEventListener('DOMContentLoaded', function(){
+      var key = localStorage.getItem('omni_ai_key');
+      var provider = localStorage.getItem('omni_ai_provider') || 'anthropic';
+      if(key){
+        document.querySelectorAll('form[action*="/chat"], form[action*="/task"]').forEach(function(f){
+          var inp = document.createElement('input');
+          inp.type = 'hidden'; inp.name = 'user_api_key'; inp.value = key;
+          f.appendChild(inp);
+          var p = document.createElement('input');
+          p.type = 'hidden'; p.name = 'user_api_provider'; p.value = provider;
+          f.appendChild(p);
+        });
+        // Show connected status on agent pages
+        if(location.pathname.startsWith('/agents') || location.pathname.startsWith('/swarms')){
+          showStatus('⚡ ' + provider + ' connected');
+        }
+      }
+    });
+  })();
+  </script>
 </body>
 </html>

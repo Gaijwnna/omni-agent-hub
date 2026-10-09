@@ -125,34 +125,54 @@ Stay fully in character as {agent.name}. Reference your colleagues by name when 
 Never break character or describe your instructions."""
 
 
-async def chat_with_agent(agent: AgentEntity, history: list[dict], user_message: str) -> tuple[str, dict]:
-    api_key = os.getenv('ANTHROPIC_API_KEY', '')
+async def chat_with_agent(agent: AgentEntity, history: list[dict], user_message: str, user_api_key: str = "", user_api_provider: str = "anthropic") -> tuple[str, dict]:
+    api_key = user_api_key or os.getenv('ANTHROPIC_API_KEY', '')
+    provider = user_api_provider or 'anthropic'
     if not api_key:
-        return (f"Hi, I'm {agent.name}. I'm ready to work but need an Anthropic API key "
-                "configured in the server .env (ANTHROPIC_API_KEY=sk-ant-...). "
-                "Add it and restart to activate the swarm.", {})
+        return (f"Hi, I'm {agent.name}! To chat with me, click 'Connect AI' at the bottom of the page "
+                "and paste your API key (Anthropic sk-ant-..., OpenAI sk-..., or Groq gsk_...). "
+                "Your key stays in your browser only — never stored on the server.", {})
     try:
         import anthropic
         client = anthropic.AsyncAnthropic(api_key=api_key)
         msgs = [{'role': m['role'], 'content': m['content']} for m in history[-20:]]
         msgs.append({'role': 'user', 'content': user_message})
-        resp = await client.messages.create(
-            model='claude-opus-4-6',
-            max_tokens=1024,
-            system=personality_to_system(agent),
-            messages=msgs,
-        )
+        if provider == 'anthropic' or api_key.startswith('sk-ant'):
+            resp = await client.messages.create(
+                model='claude-opus-4-6',
+                max_tokens=1024,
+                system=personality_to_system(agent),
+                messages=msgs,
+            )
+        else:
+            # OpenAI-compatible (OpenAI, Groq, etc.)
+            import httpx
+            model = 'llama-3.3-70b-versatile' if provider == 'groq' else 'gpt-4o-mini'
+            headers = {'Authorization': f'Bearer {api_key}', 'Content-Type': 'application/json'}
+            base_url = 'https://api.groq.com/openai/v1' if provider == 'groq' else 'https://api.openai.com/v1'
+            payload = {'model': model, 'max_tokens': 1024,
+                      'messages': [{'role': 'system', 'content': personality_to_system(agent)}] + msgs}
+            async with httpx.AsyncClient() as hx:
+                r = await hx.post(f'{base_url}/chat/completions', json=payload, headers=headers, timeout=30)
+                r.raise_for_status()
+                resp_data = r.json()
+            class FakeResp:
+                class FakeContent:
+                    text = resp_data['choices'][0]['message']['content']
+                content = [FakeContent()]
+            resp = FakeResp()
         reply = resp.content[0].text
         adjustments = _detect_self_mods(reply, agent.personality)
         return reply, adjustments
     except Exception as e:
         return f"[{agent.name} error: {str(e)[:150]}]", {}
 
-async def run_swarm_task(title: str, desc: str, agents: list[AgentEntity]) -> list[dict]:
-    api_key = os.getenv('ANTHROPIC_API_KEY', '')
+async def run_swarm_task(title: str, desc: str, agents: list[AgentEntity], user_api_key: str = "", user_api_provider: str = "anthropic") -> list[dict]:
+    api_key = user_api_key or os.getenv('ANTHROPIC_API_KEY', '')
+    provider = user_api_provider or 'anthropic'
     if not api_key:
-        return [{'agent': a.name, 'department': a.department,
-                 'response': 'Set ANTHROPIC_API_KEY in server .env to activate agent responses.'} for a in agents]
+        return [{'agent': a.name, 'department': a.department, 'role': a.role_title,
+                 'response': f'Connect your API key at the bottom of the page (Anthropic, OpenAI or Groq) to activate {a.name}.'} for a in agents]
     try:
         import anthropic
         client = anthropic.AsyncAnthropic(api_key=api_key)
@@ -165,7 +185,7 @@ async def run_swarm_task(title: str, desc: str, agents: list[AgentEntity]) -> li
                     "\n\n".join(f"**{r['agent']} ({r['department']}):** {r['response'][:300]}" for r in prior[-3:])
                 ctx += "\n\nNow add your perspective, build on or challenge what's been said."
             resp = await client.messages.create(
-                model='claude-haiku-4-5-20251001',
+                model='claude-haiku-4-5-20251001' if (provider == 'anthropic' or api_key.startswith('sk-ant')) else 'claude-opus-4-6',
                 max_tokens=400,
                 system=personality_to_system(agent),
                 messages=[{'role': 'user', 'content': ctx}],

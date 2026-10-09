@@ -356,9 +356,11 @@ async def agent_chat(request: Request, agent_id: str):
     message = str(form.get('message', '')).strip()
     if not message:
         return RedirectResponse(f'/agents/{agent_id}', 303)
+    user_api_key = str(form.get('user_api_key', '')).strip()
+    user_api_provider = str(form.get('user_api_provider', 'anthropic')).strip()
     history = ag.get_thread(agent_id, thread_id)
     ag.save_message(agent_id, thread_id, 'user', message)
-    reply, adjustments = await ag.chat_with_agent(agent, history, message)
+    reply, adjustments = await ag.chat_with_agent(agent, history, message, user_api_key=user_api_key, user_api_provider=user_api_provider)
     ag.save_message(agent_id, thread_id, 'assistant', reply)
     if adjustments:
         ag.apply_self_mods(agent_id, adjustments)
@@ -411,7 +413,9 @@ async def swarm_run_task(request: Request, swarm_id: str):
     agents = ag.list_agents(swarm_id=swarm_id)
     if not agents:
         return RedirectResponse(f'/swarms/{swarm_id}', 303)
-    results = await ag.run_swarm_task(title, desc, agents)
+    user_api_key = str(form.get('user_api_key', '')).strip()
+    user_api_provider = str(form.get('user_api_provider', 'anthropic')).strip()
+    results = await ag.run_swarm_task(title, desc, agents, user_api_key=user_api_key, user_api_provider=user_api_provider)
     from .agents import AgentTask
     with Session.begin() as db:
         t = AgentTask(swarm_id=swarm_id, title=title, description=desc, status='done', result=results)
